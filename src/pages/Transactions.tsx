@@ -1,7 +1,16 @@
-import { For, createSignal, onCleanup, onMount, type Component } from 'solid-js';
+import {
+  For,
+  Show,
+  createMemo,
+  createSignal,
+  onCleanup,
+  onMount,
+  type Component,
+} from 'solid-js';
 import { mapCSV, validateEvent } from '../utils';
 import { useStore } from '../store';
 import { tinykeys } from 'tinykeys';
+import { Transaction } from '../types';
 
 const Transactions: Component = () => {
   const [state, { importTransactions }] = useStore();
@@ -9,9 +18,9 @@ const Transactions: Component = () => {
   let ref;
   let searchInputRef;
 
-  const filteredTransactions = () => {
-    let filtered = state.transactions;
-    if (searchTerm) {
+  const filteredTransactions = createMemo((): Array<Transaction> => {
+    let filtered = [...state.transactions];
+    if (searchTerm()) {
       filtered = state.transactions.filter(
         trx =>
           trx.category?.toLowerCase().includes(searchTerm().toLowerCase()) ||
@@ -21,7 +30,23 @@ const Transactions: Component = () => {
     }
     filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     return filtered;
-  };
+  });
+
+  const aggregations = createMemo(() => {
+    if (searchTerm()) {
+      return {
+        num: filteredTransactions().length,
+        total: filteredTransactions()
+          .map(t => t.amount)
+          .reduce((a, b) => a + b, 0),
+        avg:
+          filteredTransactions()
+            .map(t => t.amount)
+            .reduce((a, b) => a + b, 0) / (filteredTransactions().length || 1),
+      };
+    }
+    return null;
+  });
 
   onMount(() => {
     ref.addEventListener('change', () => {
@@ -57,6 +82,17 @@ const Transactions: Component = () => {
             }}
           />
         </form>
+        <Show when={aggregations()}>
+          <div class="flex flex-row gap-4 mb-4">
+            <span>num: {aggregations()?.num}</span>
+            <span class={aggregations()?.total < 0 ? 'text-red-600' : 'text-green-600'}>
+              total: CHF {aggregations()?.total.toFixed(2)}
+            </span>
+            <span class={aggregations()?.avg < 0 ? 'text-red-600' : 'text-green-600'}>
+              avg: CHF {aggregations()?.avg.toFixed(2)}
+            </span>
+          </div>
+        </Show>
         <For each={filteredTransactions()}>
           {transaction => (
             <div
@@ -67,7 +103,7 @@ const Transactions: Component = () => {
             >
               <span class="text-gray-700">{transaction.date}</span>
               <span class={transaction.amount < 0 ? 'text-red-600' : 'text-green-600'}>
-                {transaction.amount} CHF
+                CHF {transaction.amount}
               </span>
               <span>{transaction.description}</span>
               <span>{transaction.subject}</span>
