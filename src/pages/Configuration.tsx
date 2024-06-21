@@ -1,5 +1,5 @@
 import { Component, createSignal, Show } from 'solid-js';
-import { useStore } from './store';
+import { useStore } from '../store';
 
 const Configuration: Component = () => {
   const [state, { setS3Config }] = useStore();

@@ -3,16 +3,16 @@ import { validateEvent } from './utils';
 import { tinykeys } from 'tinykeys';
 import { useStore } from './store';
 import { ephemeralStore } from './EphemeralStore';
-import Configuration from './Configuration';
-import Help from './Help';
-import { Feedback } from './Feedback';
+import Configuration from './pages/Configuration';
+import Help from './pages/Help';
+import { Feedback } from './pages/Feedback';
 import { Route, Router } from '@solidjs/router';
-import Layout from './Layout';
-import Transactions from './Transactions';
-import Analyze from './Analyze';
-import Settings from './settings/Settings';
-import Categories from './settings/Categories';
-import Scripts from './settings/Scripts';
+import Layout from './pages/Layout';
+import Transactions from './pages/Transactions';
+import Analyze from './pages/Analyze';
+import Settings from './pages/settings/Settings';
+import Categories from './pages/settings/Categories';
+import Scripts from './pages/settings/Scripts';
 
 const App: Component = () => {
   const [state, { cycleScreen }] = useStore();

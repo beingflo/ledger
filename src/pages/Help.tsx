@@ -1,5 +1,5 @@
 import { Component } from 'solid-js';
-import Logo from '../src/bread.svg';
+import Logo from '../../src/bread.svg';
 
 const Help: Component = () => {
   const Instruction = (props: { left: string; right: string }) => {
