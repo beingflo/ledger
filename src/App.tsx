@@ -6,6 +6,11 @@ import { ephemeralStore } from './EphemeralStore';
 import Configuration from './Configuration';
 import Help from './Help';
 import { Feedback } from './Feedback';
+import { Route, Router } from '@solidjs/router';
+import Layout from './Layout';
+import Transactions from './Transactions';
+import Analyze from './Analyze';
+import Settings from './Settings';
 
 const App: Component = () => {
   const [state, { cycleScreen }] = useStore();
@@ -22,9 +27,11 @@ const App: Component = () => {
     <Switch
       fallback={
         <>
-          <div class="w-full max-w-8xl mx-auto grid grid-cols-12 gap-4 p-2 md:p-4">
-            ledger
-          </div>
+          <Router root={Layout}>
+            <Route path="/" component={Transactions} />
+            <Route path="/analyze" component={Analyze} />
+            <Route path="/settings" component={Settings} />
+          </Router>
           <Show when={ephemeralStore.showToast}>
             <div class="fixed bottom-0 right-0 grid gap-x-2 grid-cols-2 bg-white p-2 font-light text-sm">
               <p class="text-right">new</p>
