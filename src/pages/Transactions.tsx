@@ -19,14 +19,22 @@ const Transactions: Component = () => {
 
   return (
     <>
-      <div class="w-full max-w-8xl mx-auto flex flex-col gap-4 p-4">
+      <div class="w-full max-w-8xl mx-auto flex flex-col gap-0.5 p-4">
         <For each={state.transactions}>
           {transaction => (
-            <div class="w-full text-sm text-gray-600 grid grid-cols-4 gap-2">
-              <span>{transaction.date}</span>
-              <span>{transaction.amount} CHF</span>
+            <div
+              class={
+                'w-full text-sm text-gray-500 grid grid-cols-5 py-1 ' +
+                (!transaction.category && 'bg-red-50')
+              }
+            >
+              <span class="text-gray-700">{transaction.date}</span>
+              <span class={transaction.amount < 0 ? 'text-red-600' : 'text-green-600'}>
+                {transaction.amount} CHF
+              </span>
               <span>{transaction.description}</span>
               <span>{transaction.subject}</span>
+              <span>{transaction.category}</span>
             </div>
           )}
         </For>
