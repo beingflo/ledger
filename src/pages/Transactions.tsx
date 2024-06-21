@@ -1,10 +1,27 @@
-import { For, onMount, type Component } from 'solid-js';
-import { mapCSV } from '../utils';
+import { For, createSignal, onCleanup, onMount, type Component } from 'solid-js';
+import { mapCSV, validateEvent } from '../utils';
 import { useStore } from '../store';
+import { tinykeys } from 'tinykeys';
 
 const Transactions: Component = () => {
   const [state, { importTransactions }] = useStore();
+  const [searchTerm, setSearchTerm] = createSignal('');
   let ref;
+  let searchInputRef;
+
+  const filteredTransactions = () => {
+    let filtered = state.transactions;
+    if (searchTerm) {
+      filtered = state.transactions.filter(
+        trx =>
+          trx.category?.toLowerCase().includes(searchTerm().toLowerCase()) ||
+          trx.description?.toLowerCase().includes(searchTerm().toLowerCase()) ||
+          trx.subject?.toLowerCase().includes(searchTerm().toLowerCase()),
+      );
+    }
+    filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    return filtered;
+  };
 
   onMount(() => {
     ref.addEventListener('change', () => {
@@ -17,10 +34,30 @@ const Transactions: Component = () => {
     });
   });
 
+  const cleanup = tinykeys(window, {
+    '$mod+k': validateEvent(() => {
+      searchInputRef.focus();
+    }),
+  });
+
+  onCleanup(cleanup);
+
   return (
     <>
       <div class="w-full max-w-8xl mx-auto flex flex-col gap-0.5 p-4">
-        <For each={state.transactions}>
+        <form onSubmit={event => event.preventDefault()}>
+          <input
+            type="text"
+            ref={searchInputRef}
+            class="focus:outline-none w-full text-md placeholder:font-thin block mb-4 border-0 focus:ring-0"
+            placeholder="Search"
+            value={searchTerm()}
+            onInput={event => {
+              setSearchTerm(event?.currentTarget?.value);
+            }}
+          />
+        </form>
+        <For each={filteredTransactions()}>
           {transaction => (
             <div
               class={

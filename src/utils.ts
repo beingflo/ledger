@@ -39,6 +39,9 @@ export const mapCSV = (csv: string): Array<Transaction> => {
         tags: values[8],
         wise: values[9],
         spaces: values[10],
+        category: '',
+        importedAt: new Date().toDateString(),
+        factor: 1.0,
       });
     }
   });

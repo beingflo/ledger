@@ -13,6 +13,8 @@ export type Transaction = {
   tags?: string;
   wise: string;
   spaces: string;
+  importedAt: string;
+  factor: number;
 };
 
 export type S3Data = {
