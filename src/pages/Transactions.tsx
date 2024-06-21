@@ -13,10 +13,12 @@ import { tinykeys } from 'tinykeys';
 import { Transaction } from '../types';
 
 const Transactions: Component = () => {
-  const [state, { importTransactions }] = useStore();
+  const [state, { importTransactions, updateTransaction }] = useStore();
   const [searchTerm, setSearchTerm] = createSignal('');
   const [editFactorIdx, setEditFactorIdx] = createSignal(null);
   const [editCategoryIdx, setEditCategoryIdx] = createSignal(null);
+  const [newFactorValue, setNewFactorValue] = createSignal('');
+  const [newCategoryValue, setNewCategoryValue] = createSignal('');
   let ref;
   let searchInputRef;
   let categoryInputRef;
@@ -76,6 +78,22 @@ const Transactions: Component = () => {
 
   onCleanup(cleanup);
 
+  const onEditCategoryEnd = event => {
+    event?.preventDefault();
+    updateTransaction(editCategoryIdx(), newCategoryValue(), null);
+    setEditCategoryIdx(null);
+  };
+
+  const onEditFactoryEnd = event => {
+    event?.preventDefault();
+    const num = Number(newFactorValue());
+
+    if (num >= -1 && num <= 1) {
+      updateTransaction(editFactorIdx(), null, num);
+      setEditFactorIdx(null);
+    }
+  };
+
   return (
     <>
       <div class="w-full max-w-8xl mx-auto flex flex-col gap-0.5 p-4">
@@ -125,7 +143,7 @@ const Transactions: Component = () => {
                 when={editCategoryIdx() === transaction.id}
                 fallback={
                   <span
-                    class="text-right cursor-pointer"
+                    class="cursor-pointer"
                     onClick={() => {
                       setEditCategoryIdx(transaction.id);
                       categoryInputRef.focus();
@@ -135,12 +153,15 @@ const Transactions: Component = () => {
                   </span>
                 }
               >
-                <input
-                  autofocus
-                  ref={categoryInputRef}
-                  class="text-right"
-                  value={transaction.category}
-                />
+                <form onSubmit={onEditCategoryEnd}>
+                  <input
+                    autofocus
+                    class="w-full"
+                    ref={categoryInputRef}
+                    value={transaction.category}
+                    onInput={event => setNewCategoryValue(event?.currentTarget.value)}
+                  />
+                </form>
               </Show>
               <Show
                 when={editFactorIdx() === transaction.id}
@@ -152,16 +173,19 @@ const Transactions: Component = () => {
                       factorInputRef.focus();
                     }}
                   >
-                    {transaction.factor.toFixed(1)}
+                    {transaction?.factor?.toFixed(1)}
                   </span>
                 }
               >
-                <input
-                  autofocus
-                  ref={factorInputRef}
-                  class="text-right"
-                  value={transaction.factor}
-                />
+                <form onSubmit={onEditFactoryEnd}>
+                  <input
+                    autofocus
+                    ref={factorInputRef}
+                    class="text-right w-full"
+                    value={transaction.factor}
+                    onInput={event => setNewFactorValue(event?.currentTarget.value)}
+                  />
+                </form>
               </Show>
             </div>
           )}

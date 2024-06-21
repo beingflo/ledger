@@ -1,5 +1,5 @@
 import { createContext, createEffect, useContext } from 'solid-js';
-import { createStore } from 'solid-js/store';
+import { createStore, produce } from 'solid-js/store';
 import { Screens, State, Transaction } from './types';
 
 export const storeName = 'store';
@@ -34,6 +34,18 @@ export function StoreProvider(props) {
           transactions: [...(state.transactions ?? []), ...trx],
         });
       },
+      updateTransaction(id: string, category: string, factor: number) {
+        setState(
+          produce((state: State) => {
+            state.transactions.forEach(trx => {
+              if (trx.id === id) {
+                if (category) trx.category = category;
+                if (factor === 0 || factor) trx.factor = factor;
+              }
+            });
+          }),
+        );
+      },
     },
   ];
 
@@ -43,6 +55,6 @@ export function StoreProvider(props) {
 export function useStore() {
   return useContext(StoreContext) as [
     State,
-    { [key: string]: (data?: unknown) => unknown },
+    { [key: string]: (data?: unknown, ...args) => unknown },
   ];
 }
