@@ -6,14 +6,20 @@ const Layout: Component = (props: RouteSectionProps) => {
 
   return (
     <>
-      <div class="w-full flex flex-row gap-4 p-2 md:p-4">
+      <div class="w-full flex flex-row gap-4 p-4 pb-2">
         <a class={location.pathname === '/' && 'underline'} href="/">
           transactions
         </a>
-        <a class={location.pathname === '/analyze' && 'underline'} href="/analyze">
+        <a
+          class={location.pathname.startsWith('/analyze') && 'underline'}
+          href="/analyze"
+        >
           analyze
         </a>
-        <a class={location.pathname === '/settings' && 'underline'} href="/settings">
+        <a
+          class={location.pathname.startsWith('/settings') && 'underline'}
+          href="/settings/categories"
+        >
           settings
         </a>
       </div>
