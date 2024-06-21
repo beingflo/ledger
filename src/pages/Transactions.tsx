@@ -54,6 +54,20 @@ const Transactions: Component = () => {
     return null;
   });
 
+  const categories = createMemo((): Array<string> => {
+    const cats = new Set<string>();
+    state.transactions.forEach(trx => {
+      if (trx.category) cats.add(trx.category);
+    });
+
+    return [...cats.values()];
+  });
+
+  const filteredCategories = createMemo(
+    (): Array<string> =>
+      categories().filter((cat: string) => cat.includes(newCategoryValue())),
+  );
+
   onMount(() => {
     ref.addEventListener('change', () => {
       const reader = new FileReader();
@@ -72,6 +86,8 @@ const Transactions: Component = () => {
     Escape: () => {
       setEditCategoryIdx(null);
       setEditFactorIdx(null);
+      setNewCategoryValue('');
+      setNewFactorValue('');
       searchInputRef.blur();
     },
   });
@@ -82,6 +98,7 @@ const Transactions: Component = () => {
     event?.preventDefault();
     updateTransaction(editCategoryIdx(), newCategoryValue(), null);
     setEditCategoryIdx(null);
+    setNewCategoryValue('');
   };
 
   const onEditFactoryEnd = event => {
@@ -91,6 +108,7 @@ const Transactions: Component = () => {
     if (num >= -1 && num <= 1) {
       updateTransaction(editFactorIdx(), null, num);
       setEditFactorIdx(null);
+      setNewFactorValue('');
     }
   };
 
@@ -129,8 +147,6 @@ const Transactions: Component = () => {
               }
             >
               <span class="text-gray-700">{transaction.date}</span>
-              <span class="col-span-2">{transaction.description}</span>
-              <span class="col-span-2">{transaction.subject}</span>
               <span
                 class={
                   'text-right ' +
@@ -139,6 +155,7 @@ const Transactions: Component = () => {
               >
                 CHF {transaction.amount.toFixed(2)}
               </span>
+              <span class="col-span-2">{transaction.description}</span>
               <Show
                 when={editCategoryIdx() === transaction.id}
                 fallback={
@@ -146,6 +163,7 @@ const Transactions: Component = () => {
                     class="cursor-pointer"
                     onClick={() => {
                       setEditCategoryIdx(transaction.id);
+                      if (transaction.category) setNewCategoryValue(transaction.category);
                       categoryInputRef.focus();
                     }}
                   >
@@ -162,7 +180,13 @@ const Transactions: Component = () => {
                     onInput={event => setNewCategoryValue(event?.currentTarget.value)}
                   />
                 </form>
+                <div class="fixed right-1 top-1 p-2 bg-white border-gray-100">
+                  <div class="max-w-full flex flex-row flex-wrap gap-1">
+                    <For each={filteredCategories()}>{cat => <span>{cat}</span>}</For>
+                  </div>
+                </div>
               </Show>
+              <span class="col-span-2">{transaction.subject}</span>
               <Show
                 when={editFactorIdx() === transaction.id}
                 fallback={
