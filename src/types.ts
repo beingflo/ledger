@@ -8,7 +8,8 @@ export type Transaction = {
   exchangeRate?: number;
   description: string;
   subject?: string;
-  category: string;
+  originalCategory: string;
+  category?: string;
   tags?: string;
   wise: string;
   spaces: string;
@@ -23,5 +24,6 @@ export type S3Data = {
 
 export type State = {
   screen: Screens;
+  transactions: Array<Transaction>;
   s3?: S3Data;
 };

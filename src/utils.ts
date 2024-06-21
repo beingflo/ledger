@@ -26,19 +26,21 @@ export const mapCSV = (csv: string): Array<Transaction> => {
 
   lines.forEach(line => {
     const values = line.split(';').map(value => value.slice(1, value.length - 1));
-    transactions.push({
-      date: values[0],
-      amount: Number(values[1]),
-      originalAmount: Number(values[2]),
-      originalCurrency: values[3],
-      exchangeRate: Number(values[4]),
-      description: values[5],
-      subject: values[6],
-      category: values[7],
-      tags: values[8],
-      wise: values[9],
-      spaces: values[10],
-    });
+    if (values[0] && values[1]) {
+      transactions.push({
+        date: values[0],
+        amount: Number(values[1]),
+        originalAmount: Number(values[2]),
+        originalCurrency: values[3],
+        exchangeRate: Number(values[4]),
+        description: values[5],
+        subject: values[6],
+        originalCategory: values[7],
+        tags: values[8],
+        wise: values[9],
+        spaces: values[10],
+      });
+    }
   });
 
   return transactions;

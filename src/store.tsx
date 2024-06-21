@@ -1,6 +1,6 @@
 import { createContext, createEffect, useContext } from 'solid-js';
 import { createStore } from 'solid-js/store';
-import { Screens, State } from './types';
+import { Screens, State, Transaction } from './types';
 
 export const storeName = 'store';
 
@@ -10,7 +10,7 @@ const localState: string = localStorage.getItem(storeName);
 
 const parsedState: State = localState
   ? (JSON.parse(localState) as State)
-  : { screen: 'help' };
+  : { screen: 'help', transactions: [] };
 
 export const [state, setState] = createStore(parsedState);
 
@@ -27,6 +27,12 @@ export function StoreProvider(props) {
           newScreen = screen;
         }
         setState({ screen: newScreen });
+      },
+      importTransactions(trx: Array<Transaction>) {
+        // TODO deduplicate
+        setState({
+          transactions: [...(state.transactions ?? []), ...trx],
+        });
       },
     },
   ];

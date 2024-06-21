@@ -1,8 +1,9 @@
-import { createEffect, createSignal, onMount, type Component } from 'solid-js';
+import { For, onMount, type Component } from 'solid-js';
 import { mapCSV } from '../utils';
+import { useStore } from '../store';
 
 const Transactions: Component = () => {
-  const [transactions, setTransactions] = createSignal([]);
+  const [state, { importTransactions }] = useStore();
   let ref;
 
   onMount(() => {
@@ -10,18 +11,25 @@ const Transactions: Component = () => {
       const reader = new FileReader();
       reader.onload = evt => {
         const trx = mapCSV(evt.target.result as string);
-        setTransactions(trx);
+        importTransactions(trx);
       };
       reader.readAsText(ref.files[0]);
     });
   });
 
-  createEffect(() => console.log(transactions()));
-
   return (
     <>
-      <div class="w-full max-w-8xl mx-auto grid grid-cols-12 gap-4 p-4 pt-2">
-        transactions
+      <div class="w-full max-w-8xl mx-auto flex flex-col gap-4 p-4">
+        <For each={state.transactions}>
+          {transaction => (
+            <div class="w-full text-sm text-gray-600 grid grid-cols-4 gap-2">
+              <span>{transaction.date}</span>
+              <span>{transaction.amount} CHF</span>
+              <span>{transaction.description}</span>
+              <span>{transaction.subject}</span>
+            </div>
+          )}
+        </For>
       </div>
       <div class="fixed bottom-2 right-4 font-light text-sm">
         <label class="cursor-pointer" for="file">
