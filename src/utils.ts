@@ -28,6 +28,7 @@ export const mapCSV = (csv: string): Array<Transaction> => {
     const values = line.split(';').map(value => value.slice(1, value.length - 1));
     if (values[0] && values[1]) {
       transactions.push({
+        id: getNewId(),
         date: values[0],
         amount: Number(values[1]),
         originalAmount: Number(values[2]),

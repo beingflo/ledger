@@ -15,8 +15,12 @@ import { Transaction } from '../types';
 const Transactions: Component = () => {
   const [state, { importTransactions }] = useStore();
   const [searchTerm, setSearchTerm] = createSignal('');
+  const [editFactorIdx, setEditFactorIdx] = createSignal(null);
+  const [editCategoryIdx, setEditCategoryIdx] = createSignal(null);
   let ref;
   let searchInputRef;
+  let categoryInputRef;
+  let factorInputRef;
 
   const filteredTransactions = createMemo((): Array<Transaction> => {
     let filtered = [...state.transactions];
@@ -63,6 +67,11 @@ const Transactions: Component = () => {
     '$mod+k': validateEvent(() => {
       searchInputRef.focus();
     }),
+    Escape: () => {
+      setEditCategoryIdx(null);
+      setEditFactorIdx(null);
+      searchInputRef.blur();
+    },
   });
 
   onCleanup(cleanup);
@@ -84,12 +93,12 @@ const Transactions: Component = () => {
         </form>
         <Show when={aggregations()}>
           <div class="flex flex-row gap-4 mb-4">
-            <span>num: {aggregations()?.num}</span>
+            <span>number: {aggregations()?.num}</span>
             <span class={aggregations()?.total < 0 ? 'text-red-600' : 'text-green-600'}>
               total: CHF {aggregations()?.total.toFixed(2)}
             </span>
             <span class={aggregations()?.avg < 0 ? 'text-red-600' : 'text-green-600'}>
-              avg: CHF {aggregations()?.avg.toFixed(2)}
+              average: CHF {aggregations()?.avg.toFixed(2)}
             </span>
           </div>
         </Show>
@@ -97,17 +106,63 @@ const Transactions: Component = () => {
           {transaction => (
             <div
               class={
-                'w-full text-sm text-gray-500 grid grid-cols-5 py-1 ' +
+                'w-full text-sm text-gray-500 grid grid-cols-8 gap-8 py-1 ' +
                 (!transaction.category && 'bg-red-50')
               }
             >
               <span class="text-gray-700">{transaction.date}</span>
-              <span class={transaction.amount < 0 ? 'text-red-600' : 'text-green-600'}>
-                CHF {transaction.amount}
+              <span class="col-span-2">{transaction.description}</span>
+              <span class="col-span-2">{transaction.subject}</span>
+              <span
+                class={
+                  'text-right ' +
+                  (transaction.amount < 0 ? 'text-red-600' : 'text-green-600')
+                }
+              >
+                CHF {transaction.amount.toFixed(2)}
               </span>
-              <span>{transaction.description}</span>
-              <span>{transaction.subject}</span>
-              <span>{transaction.category}</span>
+              <Show
+                when={editCategoryIdx() === transaction.id}
+                fallback={
+                  <span
+                    class="text-right cursor-pointer"
+                    onClick={() => {
+                      setEditCategoryIdx(transaction.id);
+                      categoryInputRef.focus();
+                    }}
+                  >
+                    {transaction.category || 'uncategorized'}
+                  </span>
+                }
+              >
+                <input
+                  autofocus
+                  ref={categoryInputRef}
+                  class="text-right"
+                  value={transaction.category}
+                />
+              </Show>
+              <Show
+                when={editFactorIdx() === transaction.id}
+                fallback={
+                  <span
+                    class="text-right cursor-pointer"
+                    onClick={() => {
+                      setEditFactorIdx(transaction.id);
+                      factorInputRef.focus();
+                    }}
+                  >
+                    {transaction.factor.toFixed(1)}
+                  </span>
+                }
+              >
+                <input
+                  autofocus
+                  ref={factorInputRef}
+                  class="text-right"
+                  value={transaction.factor}
+                />
+              </Show>
             </div>
           )}
         </For>
