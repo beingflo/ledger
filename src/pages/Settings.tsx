@@ -1,4 +1,4 @@
-import { For, Show, createSignal, onCleanup, type Component } from 'solid-js';
+import { For, Show, createMemo, createSignal, onCleanup, type Component } from 'solid-js';
 import { useStore } from '../store';
 import { tinykeys } from 'tinykeys';
 import { validateEvent } from '../utils';
@@ -45,6 +45,12 @@ const Settings: Component = () => {
     setNewScriptContent(script.content);
   };
 
+  const sortedScripts = createMemo((): Array<Script> => {
+    const scripts = [...state.scripts];
+    scripts.sort((a, b) => b.createdAt - a.createdAt);
+    return scripts;
+  });
+
   return (
     <>
       <div class="w-full grid grid-cols-12 p-4 gap-2 group">
@@ -72,7 +78,7 @@ const Settings: Component = () => {
             </form>
           </div>
         </Show>
-        <For each={state.scripts}>
+        <For each={sortedScripts()}>
           {script => (
             <>
               <div class="flex flex-row gap-2 text-sm font-light col-span-12 md:col-span-4 underline-offset-4">
@@ -100,7 +106,10 @@ const Settings: Component = () => {
                 <Show
                   when={editIdx() === script.id}
                   fallback={
-                    <div class="w-full" onClick={() => onEdit(script)}>
+                    <div
+                      class="w-full whitespace-pre-wrap break-words"
+                      onClick={() => onEdit(script)}
+                    >
                       {script.content}
                     </div>
                   }
