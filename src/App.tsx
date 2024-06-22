@@ -10,9 +10,7 @@ import { Route, Router } from '@solidjs/router';
 import Layout from './pages/Layout';
 import Transactions from './pages/Transactions';
 import Analyze from './pages/Analyze';
-import Settings from './pages/settings/Settings';
-import Categories from './pages/settings/Categories';
-import Scripts from './pages/settings/Scripts';
+import Settings from './pages/Settings';
 
 const App: Component = () => {
   const [state, { cycleScreen }] = useStore();
@@ -31,12 +29,13 @@ const App: Component = () => {
         <>
           <Router root={Layout}>
             <Route path="/" component={Transactions} />
-            <Route path="/analyze" component={Analyze} />
-            <Route path="/settings" component={Settings}>
+            <Route path="/analyze" component={Analyze}>
               <Route path="/" />
-              <Route path="/categories" component={Categories} />
-              <Route path="/scripts" component={Scripts} />
+              <Route path="/spending" component={() => <div>s</div>} />
+              <Route path="/income" component={() => <div>i</div>} />
+              <Route path="/balance" component={() => <div>b</div>} />
             </Route>
+            <Route path="/settings" component={Settings} />
           </Router>
           <Show when={ephemeralStore.showToast}>
             <div class="fixed bottom-0 right-0 grid gap-x-2 grid-cols-2 bg-white p-2 font-light text-sm">

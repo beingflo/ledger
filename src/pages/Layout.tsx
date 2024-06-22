@@ -18,7 +18,7 @@ const Layout: Component = (props: RouteSectionProps) => {
         </a>
         <a
           class={location.pathname.startsWith('/settings') && 'underline'}
-          href="/settings/categories"
+          href="/settings"
         >
           settings
         </a>

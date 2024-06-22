@@ -41,7 +41,8 @@ export const mapCSV = (csv: string): Array<Transaction> => {
         wise: values[9],
         spaces: values[10],
         category: '',
-        importedAt: new Date().toDateString(),
+        importedAt: Date.now(),
+        modifiedAt: Date.now(),
         factor: 1.0,
       });
     }

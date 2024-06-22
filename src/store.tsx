@@ -1,6 +1,7 @@
 import { createContext, createEffect, useContext } from 'solid-js';
 import { createStore, produce } from 'solid-js/store';
 import { Screens, State, Transaction } from './types';
+import { getNewId } from './utils';
 
 export const storeName = 'store';
 
@@ -10,7 +11,7 @@ const localState: string = localStorage.getItem(storeName);
 
 const parsedState: State = localState
   ? (JSON.parse(localState) as State)
-  : { screen: 'help', transactions: [] };
+  : { screen: 'help', transactions: [], scripts: [] };
 
 export const [state, setState] = createStore(parsedState);
 
@@ -41,6 +42,33 @@ export function StoreProvider(props) {
               if (trx.id === id) {
                 if (category) trx.category = category;
                 if (factor === 0 || factor) trx.factor = factor;
+              }
+            });
+          }),
+        );
+      },
+      addScript(name: string, content: string) {
+        setState({
+          scripts: [
+            ...(state.scripts ?? []),
+            {
+              id: getNewId(),
+              name,
+              content,
+              createdAt: Date.now(),
+              modifiedAt: Date.now(),
+            },
+          ],
+        });
+      },
+      modifyScript(id: string, name: string, content: string) {
+        setState(
+          produce((state: State) => {
+            state.scripts.forEach(script => {
+              if (script.id === id) {
+                script.name = name;
+                script.content = content;
+                script.modifiedAt = Date.now();
               }
             });
           }),

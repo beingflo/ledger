@@ -14,8 +14,17 @@ export type Transaction = {
   tags?: string;
   wise: string;
   spaces: string;
-  importedAt: string;
+  importedAt: number;
+  modifiedAt: number;
   factor: number;
+};
+
+export type Script = {
+  id: string;
+  name: string;
+  content: string;
+  createdAt: number;
+  modifiedAt: number;
 };
 
 export type S3Data = {
@@ -28,5 +37,6 @@ export type S3Data = {
 export type State = {
   screen: Screens;
   transactions: Array<Transaction>;
+  scripts: Array<Script>;
   s3?: S3Data;
 };
