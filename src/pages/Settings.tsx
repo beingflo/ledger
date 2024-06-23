@@ -5,7 +5,7 @@ import { validateEvent } from '../utils';
 import { Script } from '../types';
 
 const Settings: Component = () => {
-  const [state, { addScript, modifyScript }] = useStore();
+  const [state, { addScript, modifyScript, updateTransaction }] = useStore();
   const [newScriptName, setNewScriptName] = createSignal(null);
   const [newScriptContent, setNewScriptContent] = createSignal(null);
   const [newScript, setNewScript] = createSignal(false);
@@ -51,9 +51,28 @@ const Settings: Component = () => {
     return scripts;
   });
 
+  const runContent = (content: string) => {
+    const changes = [];
+
+    state.transactions.map(trx => {
+      // eslint-disable-next-line @typescript-eslint/no-implied-eval
+      const f = Function('trx', content);
+      const result = f(trx);
+      if (result?.[0] || result?.[1]) {
+        changes.push({ id: trx.id, category: result?.[0], factor: result?.[1] });
+      }
+    });
+
+    console.log('Number of changes: ', changes.length);
+
+    changes.forEach(({ id, category, factor }) => {
+      updateTransaction(id, category, factor);
+    });
+  };
+
   return (
     <>
-      <div class="w-full grid grid-cols-12 p-4 gap-2 group">
+      <div class="w-full grid grid-cols-12 p-4 gap-2 gap-y-8 group">
         <Show when={newScript()}>
           <div class="flex flex-row gap-2 text-sm font-light col-span-12 md:col-span-4 underline-offset-4">
             <form onSubmit={onEditEnd} class="w-full">
@@ -85,8 +104,13 @@ const Settings: Component = () => {
                 <Show
                   when={editIdx() === script.id}
                   fallback={
-                    <div class="w-full" onClick={() => onEdit(script)}>
-                      {script.name}
+                    <div class="flex flex-col">
+                      <div class="w-full" onClick={() => onEdit(script)}>
+                        {script.name}
+                      </div>
+                      <div class="underline" onClick={() => runContent(script.content)}>
+                        run
+                      </div>
                     </div>
                   }
                 >
