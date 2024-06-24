@@ -57,12 +57,28 @@ export const filterTransactions = (
 ): Array<Transaction> => {
   let filtered = transactions;
   if (searchTerm) {
-    filtered = transactions.filter(
-      trx =>
-        trx.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        trx.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        trx.subject?.toLowerCase().includes(searchTerm.toLowerCase()),
-    );
+    const terms = searchTerm.split(' ');
+
+    terms.forEach(term => {
+      if (term.startsWith('<') || term.startsWith('>')) {
+        const value = term.slice(1);
+        const num = Number(value);
+        const moreThan = term[0] === '>';
+        if (num === 0 || num) {
+          console.log('filtering');
+          filtered = filtered.filter(trx => {
+            return moreThan ? trx.amount > num : trx.amount < num;
+          });
+        }
+      } else {
+        filtered = filtered.filter(
+          trx =>
+            trx.category?.toLowerCase().includes(term.toLowerCase()) ||
+            trx.description?.toLowerCase().includes(term.toLowerCase()) ||
+            trx.subject?.toLowerCase().includes(term.toLowerCase()),
+        );
+      }
+    });
   }
   filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   return filtered;
