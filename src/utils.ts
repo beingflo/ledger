@@ -50,3 +50,20 @@ export const mapCSV = (csv: string): Array<Transaction> => {
 
   return transactions;
 };
+
+export const filterTransactions = (
+  searchTerm: string,
+  transactions: Array<Transaction>,
+): Array<Transaction> => {
+  let filtered = transactions;
+  if (searchTerm) {
+    filtered = transactions.filter(
+      trx =>
+        trx.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        trx.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        trx.subject?.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
+  }
+  filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  return filtered;
+};

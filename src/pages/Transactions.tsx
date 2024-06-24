@@ -7,7 +7,7 @@ import {
   onMount,
   type Component,
 } from 'solid-js';
-import { mapCSV, validateEvent } from '../utils';
+import { filterTransactions, mapCSV, validateEvent } from '../utils';
 import { useStore } from '../store';
 import { tinykeys } from 'tinykeys';
 import { Transaction } from '../types';
@@ -24,19 +24,9 @@ const Transactions: Component = () => {
   let categoryInputRef;
   let factorInputRef;
 
-  const filteredTransactions = createMemo((): Array<Transaction> => {
-    let filtered = [...state.transactions];
-    if (searchTerm()) {
-      filtered = state.transactions.filter(
-        trx =>
-          trx.category?.toLowerCase().includes(searchTerm().toLowerCase()) ||
-          trx.description?.toLowerCase().includes(searchTerm().toLowerCase()) ||
-          trx.subject?.toLowerCase().includes(searchTerm().toLowerCase()),
-      );
-    }
-    filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    return filtered;
-  });
+  const filteredTransactions = createMemo(
+    (): Array<Transaction> => filterTransactions(searchTerm(), [...state.transactions]),
+  );
 
   const aggregations = createMemo(() => {
     if (searchTerm()) {
