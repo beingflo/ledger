@@ -29,19 +29,16 @@ const Transactions: Component = () => {
   );
 
   const aggregations = createMemo(() => {
-    if (searchTerm()) {
-      return {
-        num: filteredTransactions().length,
-        total: filteredTransactions()
+    return {
+      num: filteredTransactions().length,
+      total: filteredTransactions()
+        .map(t => t.amount)
+        .reduce((a, b) => a + b, 0),
+      avg:
+        filteredTransactions()
           .map(t => t.amount)
-          .reduce((a, b) => a + b, 0),
-        avg:
-          filteredTransactions()
-            .map(t => t.amount)
-            .reduce((a, b) => a + b, 0) / (filteredTransactions().length || 1),
-      };
-    }
-    return null;
+          .reduce((a, b) => a + b, 0) / (filteredTransactions().length || 1),
+    };
   });
 
   const categories = createMemo((): Array<string> => {
@@ -117,17 +114,15 @@ const Transactions: Component = () => {
             }}
           />
         </form>
-        <Show when={aggregations()}>
-          <div class="flex flex-row gap-4 mb-4">
-            <span>number: {aggregations()?.num}</span>
-            <span class={aggregations()?.total < 0 ? 'text-red-600' : 'text-green-600'}>
-              total: CHF {aggregations()?.total.toFixed(2)}
-            </span>
-            <span class={aggregations()?.avg < 0 ? 'text-red-600' : 'text-green-600'}>
-              average: CHF {aggregations()?.avg.toFixed(2)}
-            </span>
-          </div>
-        </Show>
+        <div class="flex flex-row gap-4 mb-4 text-sm text-gray-600">
+          <span>number: {aggregations()?.num}</span>
+          <span class={aggregations()?.total < 0 ? 'text-red-600' : 'text-green-600'}>
+            total: CHF {aggregations()?.total.toFixed(2)}
+          </span>
+          <span class={aggregations()?.avg < 0 ? 'text-red-600' : 'text-green-600'}>
+            average: CHF {aggregations()?.avg.toFixed(2)}
+          </span>
+        </div>
         <For each={filteredTransactions()}>
           {transaction => (
             <div
