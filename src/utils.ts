@@ -60,14 +60,24 @@ export const filterTransactions = (
     const terms = searchTerm.split(' ');
 
     terms.forEach(term => {
-      if (term.startsWith('<') || term.startsWith('>')) {
+      // Normal comparison
+      if (term.startsWith('<<') || term.startsWith('>>')) {
+        const value = term.slice(2);
+        const num = Number(value);
+        const moreThan = term[0] === '>';
+        if (num === 0 || num) {
+          filtered = filtered.filter(trx => {
+            return moreThan ? trx.amount > num : trx.amount < num;
+          });
+        }
+        // Absolute comparison
+      } else if (term.startsWith('<') || term.startsWith('>')) {
         const value = term.slice(1);
         const num = Number(value);
         const moreThan = term[0] === '>';
         if (num === 0 || num) {
-          console.log('filtering');
           filtered = filtered.filter(trx => {
-            return moreThan ? trx.amount > num : trx.amount < num;
+            return moreThan ? Math.abs(trx.amount) > num : Math.abs(trx.amount) < num;
           });
         }
       } else {
