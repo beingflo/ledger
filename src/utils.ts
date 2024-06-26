@@ -74,10 +74,17 @@ export const filterTransactions = (
       } else if (term.startsWith('<') || term.startsWith('>')) {
         const value = term.slice(1);
         const num = Number(value);
+        const date = new Date(value);
         const moreThan = term[0] === '>';
         if (num === 0 || num) {
           filtered = filtered.filter(trx => {
             return moreThan ? Math.abs(trx.amount) > num : Math.abs(trx.amount) < num;
+          });
+        } else if (date) {
+          filtered = filtered.filter(trx => {
+            return moreThan
+              ? new Date(trx.date).getTime() > date.getTime()
+              : new Date(trx.date).getTime() < date.getTime();
           });
         }
       } else {
