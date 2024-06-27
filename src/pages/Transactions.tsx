@@ -66,6 +66,21 @@ const Transactions: Component = () => {
     });
   });
 
+  const handleEnter = () => {
+    if (editCategoryIdx()) {
+      if (filteredCategories().length === 1) {
+        setNewCategoryValue(filteredCategories()[0]);
+      }
+      onEditCategoryEnd(null);
+    }
+  };
+
+  const handleCmdEnter = () => {
+    if (editCategoryIdx()) {
+      onEditCategoryEnd(null);
+    }
+  };
+
   const cleanup = tinykeys(window, {
     '$mod+k': validateEvent(() => {
       searchInputRef.focus();
@@ -77,12 +92,14 @@ const Transactions: Component = () => {
       setNewFactorValue('');
       searchInputRef.blur();
     },
+    Enter: handleEnter,
+    '$mod+Enter': handleCmdEnter,
   });
 
   onCleanup(cleanup);
 
   const onEditCategoryEnd = event => {
-    event?.preventDefault();
+    event && event?.preventDefault();
     updateTransaction(editCategoryIdx(), newCategoryValue(), null);
     setEditCategoryIdx(null);
     setNewCategoryValue('');
@@ -156,15 +173,13 @@ const Transactions: Component = () => {
                   </span>
                 }
               >
-                <form onSubmit={onEditCategoryEnd}>
-                  <input
-                    autofocus
-                    class="w-full"
-                    ref={categoryInputRef}
-                    value={transaction.category}
-                    onInput={event => setNewCategoryValue(event?.currentTarget.value)}
-                  />
-                </form>
+                <input
+                  autofocus
+                  class="w-full"
+                  ref={categoryInputRef}
+                  value={transaction.category}
+                  onInput={event => setNewCategoryValue(event?.currentTarget.value)}
+                />
                 <div class="fixed right-0 top-0 p-1 bg-white border-gray-100">
                   <div class="max-w-full flex flex-row flex-wrap gap-1">
                     <For each={filteredCategories()}>{cat => <span>{cat}</span>}</For>
