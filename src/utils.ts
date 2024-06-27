@@ -73,8 +73,12 @@ export const filterTransactions = (
         // Absolute comparison
       } else if (term.startsWith('<') || term.startsWith('>')) {
         const value = term.slice(1);
+
         const num = Number(value);
-        const date = new Date(value);
+
+        const parts = value.split('.');
+        const date = new Date(`${parts[1]}.${parts[0]}.${parts[2]}`);
+
         const moreThan = term[0] === '>';
         if (num === 0 || num) {
           filtered = filtered.filter(trx => {
