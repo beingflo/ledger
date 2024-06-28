@@ -19,10 +19,12 @@ export type Transaction = {
   factor: number;
 };
 
-export type Script = {
+export type Categorization = {
   id: string;
   name: string;
-  content: string;
+  query: string;
+  category: string;
+  factor: number;
   createdAt: number;
   modifiedAt: number;
 };
@@ -37,6 +39,6 @@ export type S3Data = {
 export type State = {
   screen: Screens;
   transactions: Array<Transaction>;
-  scripts: Array<Script>;
+  categorizations: Array<Categorization>;
   s3?: S3Data;
 };

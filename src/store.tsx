@@ -11,7 +11,7 @@ const localState: string = localStorage.getItem(storeName);
 
 const parsedState: State = localState
   ? (JSON.parse(localState) as State)
-  : { screen: 'help', transactions: [], scripts: [] };
+  : { screen: 'help', transactions: [], categorizations: [] };
 
 export const [state, setState] = createStore(parsedState);
 
@@ -47,28 +47,38 @@ export function StoreProvider(props) {
           }),
         );
       },
-      addScript(name: string, content: string) {
+      addCategorization(name: string, query: string, category: string, factor: number) {
         setState({
-          scripts: [
-            ...(state.scripts ?? []),
+          categorizations: [
+            ...(state.categorizations ?? []),
             {
               id: getNewId(),
               name,
-              content,
+              query,
+              category,
+              factor,
               createdAt: Date.now(),
               modifiedAt: Date.now(),
             },
           ],
         });
       },
-      modifyScript(id: string, name: string, content: string) {
+      modifyCategorization(
+        id: string,
+        name: string,
+        query: string,
+        category: string,
+        factor: number,
+      ) {
         setState(
           produce((state: State) => {
-            state.scripts.forEach(script => {
-              if (script.id === id) {
-                script.name = name;
-                script.content = content;
-                script.modifiedAt = Date.now();
+            state.categorizations.forEach(categorization => {
+              if (categorization.id === id) {
+                categorization.name = name;
+                categorization.query = query;
+                categorization.category = category;
+                categorization.factor = factor;
+                categorization.modifiedAt = Date.now();
               }
             });
           }),
