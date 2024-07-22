@@ -1,18 +1,27 @@
-import { For, Show, createMemo, createSignal, onCleanup, type Component } from 'solid-js';
+import { createSignal, type Component } from 'solid-js';
 import { useStore } from '../store';
-import { tinykeys } from 'tinykeys';
-import { validateEvent } from '../utils';
 
 const Settings: Component = () => {
-  const [state] = useStore();
+  const [state, { modifyCategorizations }] = useStore();
+  const [categorizationJson, setCategorizationJson] = createSignal('');
+
+  const onEditEnd = event => {
+    event?.preventDefault();
+    console.log(categorizationJson());
+    modifyCategorizations(JSON.parse(categorizationJson() ?? ''));
+  };
 
   return (
     <>
-      <div class="w-full grid grid-cols-12 p-4 gap-2 gap-y-8">test</div>
-      <details>
-        <summary>test</summary>
-        Hello there
-      </details>
+      <div class="w-full flex flex-col p-4 gap-8 items-start">
+        <textarea
+          class="w-full h-96 border border-dashed border-gray-400 focus:outline-none"
+          placeholder="content"
+          value={JSON.stringify(state.categorizations ?? [])}
+          onInput={event => setCategorizationJson(event?.currentTarget.value)}
+        />
+        <button onClick={onEditEnd}>save</button>
+      </div>
     </>
   );
 };

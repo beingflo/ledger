@@ -20,13 +20,9 @@ export type Transaction = {
 };
 
 export type Categorization = {
-  id: string;
-  name: string;
   query: string;
   category: string;
   factor: number;
-  createdAt: number;
-  modifiedAt: number;
 };
 
 export type S3Data = {

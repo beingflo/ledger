@@ -1,7 +1,6 @@
 import { createContext, createEffect, useContext } from 'solid-js';
 import { createStore, produce } from 'solid-js/store';
-import { Screens, State, Transaction } from './types';
-import { getNewId } from './utils';
+import { Categorization, Screens, State, Transaction } from './types';
 
 export const storeName = 'store';
 
@@ -47,42 +46,10 @@ export function StoreProvider(props) {
           }),
         );
       },
-      addCategorization(name: string, query: string, category: string, factor: number) {
+      modifyCategorizations(categorizations: Array<Categorization>) {
         setState({
-          categorizations: [
-            ...(state.categorizations ?? []),
-            {
-              id: getNewId(),
-              name,
-              query,
-              category,
-              factor,
-              createdAt: Date.now(),
-              modifiedAt: Date.now(),
-            },
-          ],
+          categorizations,
         });
-      },
-      modifyCategorization(
-        id: string,
-        name: string,
-        query: string,
-        category: string,
-        factor: number,
-      ) {
-        setState(
-          produce((state: State) => {
-            state.categorizations.forEach(categorization => {
-              if (categorization.id === id) {
-                categorization.name = name;
-                categorization.query = query;
-                categorization.category = category;
-                categorization.factor = factor;
-                categorization.modifiedAt = Date.now();
-              }
-            });
-          }),
-        );
       },
     },
   ];
