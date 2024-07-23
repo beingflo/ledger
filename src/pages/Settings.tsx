@@ -4,7 +4,7 @@ import { filterTransactions } from '../utils';
 import { Categorization } from '../types';
 
 const Settings: Component = () => {
-  const [state, { modifyCategorizations, updateTransaction }] = useStore();
+  const [state, { modifyCategorizations, updateTransactions }] = useStore();
   const [categorizationJson, setCategorizationJson] = createSignal('');
 
   const onEditEnd = event => {
@@ -19,11 +19,16 @@ const Settings: Component = () => {
 
     categorizations.forEach(cat => {
       const filteredTransactions = filterTransactions(cat.query, [...state.transactions]);
-      filteredTransactions.forEach(trx => {
-        updateTransaction(trx.id, cat.category, cat.factor);
-      });
+      updateTransactions(
+        filteredTransactions?.map(trx => ({
+          id: trx.id,
+          category: cat.category,
+          factor: cat.factor,
+        })),
+      );
       console.log(filteredTransactions.length, 'transactions updated');
     });
+    console.log('done');
   };
 
   return (

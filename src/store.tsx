@@ -34,14 +34,18 @@ export function StoreProvider(props) {
           transactions: [...(state.transactions ?? []), ...trx],
         });
       },
-      updateTransaction(id: string, category: string, factor: number) {
+      updateTransactions(
+        transactions: Array<{ id: string; category: string; factor: number }>,
+      ) {
         setState(
           produce((state: State) => {
-            state.transactions.forEach(trx => {
-              if (trx.id === id) {
-                if (category) trx.category = category;
-                if (factor === 0 || factor) trx.factor = factor;
-              }
+            transactions.forEach(tr => {
+              state.transactions.forEach(trx => {
+                if (trx.id === tr.id) {
+                  if (tr.category) trx.category = tr.category;
+                  if (tr.factor === 0 || tr.factor) trx.factor = tr.factor;
+                }
+              });
             });
           }),
         );
