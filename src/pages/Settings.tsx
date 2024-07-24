@@ -5,7 +5,9 @@ import { Categorization } from '../types';
 
 const Settings: Component = () => {
   const [state, { modifyCategorizations, updateTransactions }] = useStore();
-  const [categorizationJson, setCategorizationJson] = createSignal('');
+  const [categorizationJson, setCategorizationJson] = createSignal(
+    JSON.stringify(state.categorizations ?? [], null, 2),
+  );
 
   const onEditEnd = event => {
     event?.preventDefault();
@@ -37,7 +39,7 @@ const Settings: Component = () => {
         <textarea
           class="p-2 w-full h-96 border border-black focus:outline-none"
           placeholder="content"
-          value={JSON.stringify(state.categorizations ?? [], null, 2)}
+          value={categorizationJson()}
           onInput={event => setCategorizationJson(event?.currentTarget.value)}
         />
         <div class="flex flex-row gap-4">
