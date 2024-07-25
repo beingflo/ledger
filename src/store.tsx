@@ -34,6 +34,18 @@ export function StoreProvider(props) {
           transactions: [...(state.transactions ?? []), ...trx],
         });
       },
+      updateTransaction(id: string, category: string, factor: number) {
+        setState(
+          produce((state: State) => {
+            state.transactions.forEach(trx => {
+              if (trx.id === id) {
+                if (category) trx.category = category;
+                if (factor === 0 || factor) trx.factor = factor;
+              }
+            });
+          }),
+        );
+      },
       updateTransactions(
         transactions: Array<{ id: string; category: string; factor: number }>,
       ) {
