@@ -91,6 +91,13 @@ export const filterTransactions = (
               : new Date(trx.date).getTime() < date.getTime();
           });
         }
+      } else if (term.startsWith('.')) {
+        const query = term.slice(1);
+        filtered = filtered.filter(
+          trx =>
+            trx.description?.toLowerCase().includes(query.toLowerCase()) ||
+            trx.subject?.toLowerCase().includes(query.toLowerCase()),
+        );
       } else {
         filtered = filtered.filter(
           trx =>
