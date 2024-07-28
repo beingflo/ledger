@@ -15,6 +15,7 @@ import { Transaction } from '../types';
 const Transactions: Component = () => {
   const [state, { importTransactions, updateTransaction }] = useStore();
   const [searchTerm, setSearchTerm] = createSignal('');
+  const [showUncategorized, setShowUncategorized] = createSignal(false);
   const [editFactorIdx, setEditFactorIdx] = createSignal(null);
   const [editCategoryIdx, setEditCategoryIdx] = createSignal(null);
   const [newFactorValue, setNewFactorValue] = createSignal('');
@@ -25,7 +26,15 @@ const Transactions: Component = () => {
   let factorInputRef;
 
   const filteredTransactions = createMemo(
-    (): Array<Transaction> => filterTransactions(searchTerm(), [...state.transactions]),
+    (): Array<Transaction> =>
+      filterTransactions(searchTerm(), [...state.transactions]).filter(
+        (trx: Transaction) => {
+          if (showUncategorized()) {
+            return !trx.category;
+          }
+          return true;
+        },
+      ),
   );
 
   const aggregations = createMemo(() => {
@@ -93,6 +102,7 @@ const Transactions: Component = () => {
       searchInputRef.blur();
     },
     Enter: handleEnter,
+    u: validateEvent(() => setShowUncategorized(prev => !prev)),
     '$mod+Enter': handleCmdEnter,
   });
 
