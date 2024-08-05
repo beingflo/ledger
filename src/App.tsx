@@ -13,6 +13,7 @@ import Analyze from './pages/Analyze';
 import Settings from './pages/Settings';
 import Spending from './pages/Spending';
 import Income from './pages/Income';
+import Balance from './pages/Balance';
 
 const App: Component = () => {
   const [state, { cycleScreen }] = useStore();
@@ -35,7 +36,7 @@ const App: Component = () => {
               <Route path="/" />
               <Route path="/spending" component={Spending} />
               <Route path="/income" component={Income} />
-              <Route path="/balance" component={() => <div>b</div>} />
+              <Route path="/balance" component={Balance} />
             </Route>
             <Route path="/settings" component={Settings} />
           </Router>
