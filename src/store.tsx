@@ -31,9 +31,18 @@ export function StoreProvider(props) {
         setState({ screen: newScreen });
       },
       importTransactions(trx: Array<Transaction>) {
-        // TODO deduplicate
+        const newTransactions = trx.filter(t => {
+          const sameDay = state.transactions.filter(st => st.date === t.date);
+          const sameAmount = sameDay.filter(st => st.amount === t.amount);
+          const sameDescription = sameAmount.find(st => st.description === t.description);
+
+          if (sameDescription) {
+            console.log(`skipping duplicate: ${t.date}, ${t.description}, ${t.amount}`);
+          }
+          return !sameDescription;
+        });
         setState({
-          transactions: [...(state.transactions ?? []), ...trx],
+          transactions: [...(state.transactions ?? []), ...newTransactions],
         });
       },
       updateTransaction(id: string, category: string, factor: number) {
