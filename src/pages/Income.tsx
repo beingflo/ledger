@@ -8,6 +8,7 @@ const Income: Component = () => {
   const income = createMemo(() =>
     state.transactions
       .filter(trx => trx.amount > 0)
+      .filter(trx => trx.category)
       .map(trx => ({ ...trx, amount: trx.amount * trx.factor })),
   );
 
