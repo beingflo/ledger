@@ -29,6 +29,7 @@
   "dependencies": {
     "@observablehq/plot": "^0.6.15",
     "@solidjs/router": "^0.13.6",
+    "aws4fetch": "^1.0.19",
     "solid-js": "1.8.16",
     "tinykeys": "^2.1.0"
   }

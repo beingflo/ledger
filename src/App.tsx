@@ -16,12 +16,13 @@ import Income from './pages/Income';
 import Balance from './pages/Balance';
 
 const App: Component = () => {
-  const [state, { cycleScreen }] = useStore();
+  const [state, { cycleScreen, syncState }] = useStore();
 
   const cleanup = tinykeys(window, {
     h: validateEvent(() => cycleScreen('help')),
     c: validateEvent(() => cycleScreen('config')),
     f: validateEvent(() => cycleScreen('feedback')),
+    s: validateEvent(syncState),
   });
 
   onCleanup(cleanup);

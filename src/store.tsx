@@ -1,6 +1,8 @@
 import { createContext, createEffect, useContext } from 'solid-js';
 import { createStore, produce } from 'solid-js/store';
-import { Categorization, Screens, State, Transaction } from './types';
+import { Categorization, S3Data, Screens, State, Transaction } from './types';
+import { s3Sync } from './s3-utils';
+import { setEphemeralStore } from './EphemeralStore';
 
 export const storeName = 'store';
 
@@ -41,6 +43,7 @@ export function StoreProvider(props) {
               if (trx.id === id) {
                 if (category) trx.category = category;
                 if (factor === 0 || factor) trx.factor = factor;
+                trx.modifiedAt = Date.now();
               }
             });
           }),
@@ -65,6 +68,20 @@ export function StoreProvider(props) {
       modifyCategorizations(categorizations: Array<Categorization>) {
         setState({
           categorizations,
+        });
+      },
+      setS3Config(config: S3Data) {
+        setState({ s3: config });
+      },
+      async syncState() {
+        const [newLocal, newRemote, droppedLocal, droppedRemote] = await s3Sync(state);
+
+        setTimeout(() => setEphemeralStore({ showToast: false }), 4000);
+
+        setEphemeralStore({
+          new: [newLocal, newRemote] ?? [0, 0],
+          dropped: [droppedLocal, droppedRemote] ?? [0, 0],
+          showToast: true,
         });
       },
     },
