@@ -41,10 +41,12 @@ const Transactions: Component = () => {
     return {
       num: filteredTransactions().length,
       total: filteredTransactions()
+        .map(trx => ({ ...trx, amount: trx.amount * trx.factor }))
         .map(t => t.amount)
         .reduce((a, b) => a + b, 0),
       avg:
         filteredTransactions()
+          .map(trx => ({ ...trx, amount: trx.amount * trx.factor }))
           .map(t => t.amount)
           .reduce((a, b) => a + b, 0) / (filteredTransactions().length || 1),
     };
