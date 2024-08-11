@@ -8,7 +8,6 @@ const Spending: Component = () => {
   const spending = createMemo(() =>
     state.transactions
       .filter(trx => trx.amount < 0)
-      .filter(trx => trx.category)
       .map(trx => ({ ...trx, amount: trx.amount * trx.factor })),
   );
 

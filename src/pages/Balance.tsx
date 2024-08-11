@@ -6,9 +6,7 @@ const Balance: Component = () => {
   const [state] = useStore();
 
   const spending = createMemo(() =>
-    state.transactions
-      .filter(trx => trx.category)
-      .map(trx => ({ ...trx, amount: trx.amount * trx.factor })),
+    state.transactions.map(trx => ({ ...trx, amount: trx.amount * trx.factor })),
   );
 
   return (
